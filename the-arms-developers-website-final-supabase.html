@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Arms Developers — Land Development &amp; Construction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDE8DE;
+    --paper-2:#E3DCCC;
+    --soil:#171310;
+    --soil-2:#231D17;
+    --ink:#1B1712;
+    --ink-soft:#54493B;
+    --clay:#A63D1F;
+    --clay-dark:#7E2E17;
+    --teal:#1F4B4A;
+    --teal-light:#3C6E6B;
+    --line:#C9BEA9;
+    --line-dark:#3A332A;
+    --cream:#F6F2E9;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Big Shoulders Display', sans-serif;
+    font-weight:800;
+    letter-spacing:0.01em;
+    line-height:0.95;
+    margin:0;
+    color:var(--ink);
+  }
+  a{color:inherit;}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+  @media(max-width:640px){.wrap{padding:0 20px;}}
+
+  /* subtle blueprint grid background */
+  .grid-bg{
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:64px 64px;
+    background-position:-1px -1px;
+    opacity:1;
+  }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:sticky; top:0; z-index:100;
+    background:rgba(237,232,222,0.0);
+    border-bottom:1px solid transparent;
+    transition:background .35s ease, border-color .35s ease, backdrop-filter .35s ease;
+  }
+  header.scrolled{
+    background:rgba(237,232,222,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:20px 0;
+  }
+  .logo{
+    display:flex; align-items:baseline; gap:8px;
+    font-family:'Big Shoulders Display', sans-serif;
+    font-weight:800; font-size:22px; letter-spacing:0.02em;
+    text-decoration:none; color:var(--ink);
+  }
+  .logo .mark{color:var(--clay);}
+  .nav-links{display:flex; gap:30px; list-style:none; margin:0; padding:0;}
+  .nav-links a{
+    text-decoration:none; font-size:14.5px; font-weight:500; color:var(--ink-soft);
+    padding:6px 0; border-bottom:2px solid transparent; transition:color .2s, border-color .2s;
+  }
+  .nav-links a:hover{color:var(--clay); border-color:var(--clay);}
+  .nav-cta{
+    background:var(--ink); color:var(--cream); text-decoration:none;
+    padding:10px 18px; font-size:14px; font-weight:600; border-radius:2px;
+    transition:background .2s;
+  }
+  .nav-cta:hover{background:var(--clay);}
+  .menu-btn{display:none; background:none; border:none; cursor:pointer; padding:6px;}
+  .menu-btn span{display:block; width:24px; height:2px; background:var(--ink); margin:5px 0;}
+  @media(max-width:860px){
+    .nav-links{position:fixed; top:64px; left:0; right:0; background:var(--cream);
+      flex-direction:column; gap:0; border-bottom:1px solid var(--line);
+      transform:translateY(-120%); transition:transform .3s ease; padding:8px 32px;}
+    .nav-links.open{transform:translateY(0);}
+    .nav-links a{padding:14px 0; border-bottom:1px solid var(--line); width:100%;}
+    .nav-cta{display:none;}
+    .menu-btn{display:block;}
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    padding:64px 0 90px;
+    overflow:hidden;
+  }
+  .hero .wrap{
+    display:grid; grid-template-columns:1.05fr 0.95fr; gap:56px; align-items:center;
+  }
+  @media(max-width:900px){ .hero .wrap{grid-template-columns:1fr;} }
+
+  .eyebrow-plot{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--teal);
+    border:1px solid var(--teal); padding:4px 10px; border-radius:2px; margin-bottom:22px;
+  }
+  .eyebrow-plot::before{content:"⌖"; font-size:13px;}
+
+  .hero h1{font-size:clamp(40px, 6vw, 68px);}
+  .hero h1 .accent{color:var(--clay);}
+  .hero p.lede{
+    font-size:18px; color:var(--ink-soft); max-width:46ch; margin:24px 0 32px; line-height:1.55;
+  }
+  .btn-row{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn{
+    text-decoration:none; padding:14px 24px; font-size:15px; font-weight:600;
+    border-radius:2px; display:inline-block; transition:transform .15s ease, background .2s ease;
+    cursor:pointer; border:none;
+  }
+  .btn-primary{background:var(--clay); color:var(--cream);}
+  .btn-primary:hover{background:var(--clay-dark); transform:translateY(-1px);}
+  .btn-outline{background:transparent; color:var(--ink); border:1.5px solid var(--ink);}
+  .btn-outline:hover{background:var(--ink); color:var(--cream);}
+
+  /* interactive plot map */
+  .plotmap-wrap{position:relative;}
+  .plotmap-caption{
+    text-align:center; font-family:'IBM Plex Mono', monospace; font-size:12px;
+    color:var(--ink-soft); margin-top:10px;
+  }
+  #plotmap{width:100%; height:auto; display:block;}
+  .plot-zone{cursor:pointer; transition:fill .2s ease, opacity .2s ease;}
+  .plot-zone:hover, .plot-zone.active{fill:var(--clay);}
+  .plot-label{
+    font-family:'IBM Plex Mono', monospace; font-size:13px; font-weight:500;
+    fill:var(--paper); pointer-events:none; user-select:none;
+  }
+  .plot-boundary{
+    fill:none; stroke:var(--ink); stroke-width:2.5;
+    stroke-dasharray:900; stroke-dashoffset:900;
+    animation:draw 1.8s ease forwards .2s;
+  }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  .tooltip{
+    position:absolute; pointer-events:none; background:var(--ink); color:var(--cream);
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; padding:6px 10px; border-radius:2px;
+    opacity:0; transform:translate(-50%,-130%); transition:opacity .15s ease; white-space:nowrap; z-index:5;
+  }
+  .tooltip.show{opacity:1;}
+
+  @media(prefers-reduced-motion: reduce){
+    .plot-boundary{animation:none; stroke-dashoffset:0;}
+  }
+
+  /* ---------- SECTION HEADERS ---------- */
+  .section{padding:96px 0;}
+  .section-head{max-width:640px; margin-bottom:56px;}
+  .section-tag{
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--teal);
+    display:block; margin-bottom:14px;
+  }
+  .section h2{font-size:clamp(30px,4vw,44px); margin-bottom:16px;}
+  .section-head p{color:var(--ink-soft); font-size:16.5px; line-height:1.6; max-width:52ch;}
+
+  /* ---------- SERVICES ---------- */
+  .services-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:20px;
+  }
+  .svc-card{
+    border:1px solid var(--line); background:var(--cream); padding:28px 24px;
+    border-radius:2px; transition:border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+    scroll-margin-top:110px;
+  }
+  .svc-card.highlight{
+    border-color:var(--clay); box-shadow:0 0 0 1px var(--clay);
+  }
+  @media(max-width:900px){
+    .services-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media(max-width:560px){
+    .services-grid{grid-template-columns:1fr;}
+  }
+  .svc-top{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;}
+  .svc-parcel{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; color:var(--ink-soft);
+    border:1px solid var(--line); padding:2px 8px; border-radius:2px;
+  }
+  .svc-card svg{width:40px; height:40px;}
+  .svc-card h3{font-size:22px; margin-bottom:10px; font-weight:700;}
+  .svc-card p{color:var(--ink-soft); font-size:14.5px; line-height:1.55; margin:0;}
+
+  /* ---------- PROCESS ---------- */
+  .process{background:var(--soil); color:var(--cream);}
+  .process .section-tag{color:#8FB8B5;}
+  .process h2{color:var(--cream);}
+  .process .section-head p{color:#B8AF9F;}
+  .steps{display:grid; grid-template-columns:repeat(5,1fr); gap:0; border-top:1px solid var(--line-dark);}
+  .step{padding:28px 20px 0; border-right:1px solid var(--line-dark); position:relative;}
+  .step:last-child{border-right:none;}
+  .step .num{font-family:'IBM Plex Mono', monospace; color:var(--clay); font-size:13px;}
+  .step h4{font-family:'Big Shoulders Display'; font-weight:700; font-size:20px; margin:12px 0 10px; color:var(--cream);}
+  .step p{font-size:13.5px; color:#AFA694; line-height:1.5; padding-bottom:28px;}
+  @media(max-width:860px){
+    .steps{grid-template-columns:1fr; border-top:none;}
+    .step{border-right:none; border-top:1px solid var(--line-dark); padding-top:24px;}
+  }
+
+  /* ---------- ESTIMATOR ---------- */
+  .estimate-box{
+    display:grid; grid-template-columns:1fr 1fr; gap:0;
+    border:1px solid var(--line); background:var(--cream);
+  }
+  @media(max-width:800px){.estimate-box{grid-template-columns:1fr;}}
+  .estimate-form{padding:40px; border-right:1px solid var(--line);}
+  @media(max-width:800px){.estimate-form{border-right:none; border-bottom:1px solid var(--line);}}
+  .field{margin-bottom:22px;}
+  .field label{display:block; font-size:13px; font-weight:600; margin-bottom:8px; color:var(--ink-soft); font-family:'IBM Plex Mono', monospace;}
+  select, input[type=number], input[type=text], input[type=email], textarea{
+    width:100%; padding:12px 14px; border:1px solid var(--line); background:var(--paper);
+    font-family:'IBM Plex Sans', sans-serif; font-size:15px; border-radius:2px; color:var(--ink);
+  }
+  select:focus, input:focus, textarea:focus{outline:2px solid var(--teal); outline-offset:1px;}
+  .estimate-result{padding:40px; display:flex; flex-direction:column; justify-content:center; background:var(--paper-2);}
+  .estimate-result .amount{
+    font-family:'Big Shoulders Display'; font-weight:800; font-size:46px; color:var(--clay); line-height:1;
+  }
+  .estimate-result .unit{font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--ink-soft); margin-top:6px;}
+  .estimate-result .timeline{margin-top:24px; font-size:14.5px; color:var(--ink-soft);}
+  .estimate-result .timeline strong{color:var(--ink);}
+  .estimate-note{font-size:12px; color:var(--ink-soft); margin-top:24px; line-height:1.5; border-top:1px dashed var(--line); padding-top:16px;}
+
+  /* ---------- PROJECTS ---------- */
+  .projects-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:20px;}
+  @media(max-width:860px){.projects-grid{grid-template-columns:1fr 1fr;}}
+  @media(max-width:560px){.projects-grid{grid-template-columns:1fr;}}
+  .proj-card{border:1px solid var(--line); background:var(--cream); overflow:hidden; border-radius:2px;}
+  .proj-visual{aspect-ratio:4/3; background:var(--paper); display:flex; align-items:center; justify-content:center; border-bottom:1px solid var(--line);}
+  .proj-visual svg{width:70%; height:70%;}
+  .proj-body{padding:18px 20px;}
+  .proj-body .cat{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--teal);}
+  .proj-body h4{font-family:'Big Shoulders Display'; font-weight:700; font-size:19px; margin:6px 0;}
+  .proj-body p{font-size:13.5px; color:var(--ink-soft); margin:0;}
+
+  /* ---------- STATS ---------- */
+  .stats{border-top:1px solid var(--line); border-bottom:1px solid var(--line); background:var(--paper-2);}
+  .stats-grid{display:grid; grid-template-columns:repeat(4,1fr); text-align:left;}
+  @media(max-width:760px){.stats-grid{grid-template-columns:1fr 1fr;}}
+  .stat{padding:40px 28px; border-right:1px solid var(--line);}
+  .stat:last-child{border-right:none;}
+  @media(max-width:760px){ .stat:nth-child(2n){border-right:none;} .stat{border-bottom:1px solid var(--line);} }
+  .stat .num{font-family:'Big Shoulders Display'; font-weight:800; font-size:40px; color:var(--ink);}
+  .stat .lbl{font-size:13.5px; color:var(--ink-soft); margin-top:6px;}
+
+  /* ---------- LEADERSHIP ---------- */
+  .leadership-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px; max-width:760px;}
+  @media(max-width:600px){.leadership-grid{grid-template-columns:1fr;}}
+  .lead-card{
+    border:1px solid var(--line); background:var(--cream); padding:28px 26px; border-radius:2px;
+    display:flex; gap:18px; align-items:flex-start;
+  }
+  .lead-avatar{
+    width:56px; height:56px; border-radius:50%; background:var(--teal); color:var(--cream);
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    font-family:'Big Shoulders Display'; font-weight:800; font-size:20px;
+  }
+  .lead-card:nth-child(2) .lead-avatar{background:var(--clay);}
+  .lead-role{font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--teal); display:block; margin-bottom:4px;}
+  .lead-name{font-family:'Big Shoulders Display'; font-weight:700; font-size:22px; margin:0 0 8px;}
+  .lead-blurb{font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:0;}
+
+  /* ---------- TESTIMONIALS ---------- */
+  .testi-wrap{position:relative; max-width:760px; margin:0 auto;}
+  .testi-card{display:none;}
+  .testi-card.active{display:block;}
+  .testi-quote{font-family:'Big Shoulders Display'; font-weight:600; font-size:26px; line-height:1.3; color:var(--ink);}
+  .testi-meta{margin-top:20px; font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--ink-soft);}
+  .testi-nav{display:flex; gap:12px; margin-top:32px; justify-content:center;}
+  .testi-nav button{
+    width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--cream);
+    cursor:pointer; font-size:16px; color:var(--ink); display:flex; align-items:center; justify-content:center;
+    transition:background .2s, color .2s;
+  }
+  .testi-nav button:hover{background:var(--ink); color:var(--cream);}
+
+  /* ---------- CONTACT ---------- */
+  .contact{background:var(--soil); color:var(--cream);}
+  .contact .section-tag{color:#8FB8B5;}
+  .contact h2{color:var(--cream);}
+  .contact .section-head p{color:#B8AF9F;}
+  .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:56px;}
+  @media(max-width:860px){.contact-grid{grid-template-columns:1fr;}}
+  .contact-form .field label{color:#B8AF9F;}
+  .contact-form select, .contact-form input, .contact-form textarea{
+    background:var(--soil-2); border:1px solid var(--line-dark); color:var(--cream);
+  }
+  .contact-form select:focus, .contact-form input:focus, .contact-form textarea:focus{outline-color:var(--clay);}
+  .contact-info-item{border-top:1px solid var(--line-dark); padding:20px 0;}
+  .contact-info-item:first-child{border-top:none;}
+  .contact-info-item .k{font-family:'IBM Plex Mono', monospace; font-size:12px; color:#8FB8B5; display:block; margin-bottom:6px;}
+  .contact-info-item .v{font-size:16px;}
+  .form-success{
+    display:none; background:var(--teal); color:var(--cream); padding:16px 18px; border-radius:2px;
+    font-size:14.5px; margin-top:16px;
+  }
+  .form-success.show{display:block;}
+
+  footer{background:var(--soil); border-top:1px solid var(--line-dark); padding:32px 0; color:#8A8071; font-size:13px;}
+  .footer-row{display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; align-items:center;}
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <div class="wrap">
+    <nav>
+      <a href="#top" class="logo"><span class="mark">◆</span> THE ARMS<span style="font-weight:600;">DEVELOPERS</span></a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#services">Services</a></li>
+        <li><a href="#process">How we work</a></li>
+        <li><a href="#estimate">Estimate</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+      <a href="#contact" class="nav-cta">Request a site visit</a>
+      <button class="menu-btn" id="menuBtn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <span class="eyebrow-plot">SITE READY · 8 TRADES, ONE CONTRACTOR</span>
+      <h1>From the first survey<br>peg to the final <span class="accent">tile.</span></h1>
+      <p class="lede">We plan, grade, survey and build — warehouses, workshops, societies, houses, villas and pools — as one team, so your project doesn't stall between contractors.</p>
+      <div class="btn-row">
+        <a href="#estimate" class="btn btn-primary">Get a rough estimate</a>
+        <a href="#projects" class="btn btn-outline">See our work</a>
+      </div>
+    </div>
+    <div class="plotmap-wrap">
+      <svg id="plotmap" viewBox="0 0 480 300" xmlns="http://www.w3.org/2000/svg">
+        <rect x="10" y="10" width="460" height="280" class="plot-boundary" stroke-dasharray="1480" stroke-dashoffset="1480"/>
+        <!-- Row 1 -->
+        <path class="plot-zone" data-target="svc-warehouse" data-name="Warehouse Construction" fill="#2F5A58" d="M10,10 H125 V150 H10 Z"/>
+        <text class="plot-label" x="67.5" y="85" text-anchor="middle">A</text>
+        <path class="plot-zone" data-target="svc-fill" data-name="Land Filling &amp; Grading" fill="#3C6E6B" d="M125,10 H240 V150 H125 Z"/>
+        <text class="plot-label" x="182.5" y="85" text-anchor="middle">B</text>
+        <path class="plot-zone" data-target="svc-survey" data-name="Land Survey" fill="#4F7D77" d="M240,10 H355 V150 H240 Z"/>
+        <text class="plot-label" x="297.5" y="85" text-anchor="middle">C</text>
+        <path class="plot-zone" data-target="svc-villa" data-name="Villa Construction" fill="#5E8C84" d="M355,10 H470 V150 H355 Z"/>
+        <text class="plot-label" x="412.5" y="85" text-anchor="middle">D</text>
+        <!-- Row 2 -->
+        <path class="plot-zone" data-target="svc-pool" data-name="Swimming Pool Construction" fill="#6C9C90" d="M10,150 H125 V290 H10 Z"/>
+        <text class="plot-label" x="67.5" y="225" text-anchor="middle">E</text>
+        <path class="plot-zone" data-target="svc-society" data-name="Society &amp; Apartment Construction" fill="#7DAB9C" d="M125,150 H240 V290 H125 Z"/>
+        <text class="plot-label" x="182.5" y="225" text-anchor="middle">F</text>
+        <path class="plot-zone" data-target="svc-house" data-name="House Construction" fill="#8CBAAA" d="M240,150 H355 V290 H240 Z"/>
+        <text class="plot-label" x="297.5" y="225" text-anchor="middle">G</text>
+        <path class="plot-zone" data-target="svc-workshop" data-name="Workshop Construction" fill="#9BC9B8" d="M355,150 H470 V290 H355 Z"/>
+        <text class="plot-label" x="412.5" y="225" text-anchor="middle">H</text>
+      </svg>
+      <div class="tooltip" id="mapTooltip"></div>
+      <p class="plotmap-caption">tap a parcel to view that service — Survey No. 114/2, illustrative site plan</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="services">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// 08 SERVICES</span>
+      <h2>Every parcel, one contractor.</h2>
+      <p>Each service below stands on its own — or runs together as a single scope, from grading a raw plot to handing over a finished pool deck.</p>
+    </div>
+    <div class="services-grid">
+
+      <div class="svc-card" id="svc-warehouse" tabindex="-1">
+        <div class="svc-top">
+          <svg viewBox="0 0 40 40" fill="none" stroke="#A63D1F" stroke-width="1.8"><path d="M4 34V16L20 8L36 16V34Z"/><path d="M4 16H36"/><path d="M12 34V22H28V34"/></svg>
+          <span class="svc-parcel">PARCEL A</span>
+        </div>
+        <h3>Warehouse Construction</h3>
+        <p>Pre-engineered and RCC-frame warehouses sized to your racking, load and dock layout — structural design through handover, built for industrial and logistics use.</p>
+      </div>
+
+      <div class="svc-card" id="svc-fill" tabindex="-1">
+        <div class="svc-top">
+          <svg viewBox="0 0 40 40" fill="none" stroke="#A63D1F" stroke-width="1.8"><path d="M3 32H37"/><path d="M6 32L14 20L20 26L28 14L34 32"/><path d="M14 32V20"/></svg>
+          <span class="svc-parcel">PARCEL B</span>
+        </div>
+        <h3>Land Filling &amp; Grading</h3>
+        <p>Cut-and-fill grading, controlled soil compaction and levelling that brings a raw plot to construction-ready grade and passes load-bearing checks.</p>
+      </div>
+
+      <div class="svc-card" id="svc-survey" tabindex="-1">
+        <div class="svc-top">
+          <svg viewBox="0 0 40 40" fill="none" stroke="#A63D1F" stroke-width="1.8"><path d="M20 6V16"/><circle cx="20" cy="20" r="4"/><path d="M10 34L20 24L30 34"/><path d="M6 34H34"/></svg>
+          <span class="svc-parcel">PARCEL C</span>
+        </div>
+        <h3>Land Survey</h3>
+        <p>Boundary, topographic and layout surveys with total-station accuracy, so your title documents and the ground reality match before anyone breaks earth.</p>
+      </div>
+
+      <div class="svc-card" id="svc-villa" tabindex="-1">
+        <div class="svc-top">
+          <svg viewBox="0 0 40 40" fill="none" stroke="#A63D1F" stroke-width="1.8"><path d="M6 20L20 8L34 20"/><path d="M10 20V34H30V20"/><path d="M17 34V24H23V34"/></svg>
+          <span class="svc-parcel">PARCEL D</span>
+        </div>
+        <h3>Villa Construction</h3>
+        <p>Custom villas built to your floor plan — foundation, structure, MEP, interiors and landscaping — managed under one site supervisor end to end.</p>
+      </div>
+
+      <div class="svc-card" id="svc-pool" tabindex="-1">
+        <div class="svc-top">
+          <svg viewBox="0 0 40 40" fill="none" stroke="#A63D1F" stroke-width="1.8"><rect x="5" y="10" width="30" height="18" rx="1"/><path d="M8 34Q11 31 14 34T20 34T26 34T32 34"/></svg>
+          <span class="svc-parcel">PARCEL E</span>
+        </div>
+        <h3>Swimming Pool Construction</h3>
+        <p>RCC and shell pools with filtration, decking and tiling, engineered for residential plots or hospitality sites of any size.</p>
+      </div>
+
+      <div class="svc-card" id="svc-society" tabindex="-1">
+        <div class="svc-top">
+          <svg viewBox="0 0 40 40" fill="none" stroke="#A63D1F" stroke-width="1.8"><rect x="6" y="6" width="12" height="28"/><rect x="22" y="14" width="12" height="20"/><path d="M9 12H15M9 18H15M9 24H15M25 20H31M25 26H31"/></svg>
+          <span class="svc-parcel">PARCEL F</span>
+        </div>
+        <h3>Society &amp; Apartment Construction</h3>
+        <p>Multi-unit RCC apartment blocks and housing society buildings — structural design, common areas and amenities, built through to OC-ready handover.</p>
+      </div>
+
+      <div class="svc-card" id="svc-house" tabindex="-1">
+        <div class="svc-top">
+          <svg viewBox="0 0 40 40" fill="none" stroke="#A63D1F" stroke-width="1.8"><path d="M7 22L20 10L33 22"/><path d="M11 22V32H29V22"/><rect x="17" y="24" width="6" height="8"/></svg>
+          <span class="svc-parcel">PARCEL G</span>
+        </div>
+        <h3>House Construction</h3>
+        <p>Independent and row houses built to your plan — foundation through finish — a lighter-weight scope than a full villa build, for standard family homes.</p>
+      </div>
+
+      <div class="svc-card" id="svc-workshop" tabindex="-1">
+        <div class="svc-top">
+          <svg viewBox="0 0 40 40" fill="none" stroke="#A63D1F" stroke-width="1.8"><path d="M4 30V18L14 12L24 18V30" /><path d="M24 30V16L34 12V30"/><path d="M4 30H34"/><circle cx="12" cy="24" r="2.5"/></svg>
+          <span class="svc-parcel">PARCEL H</span>
+        </div>
+        <h3>Workshop Construction</h3>
+        <p>Steel-frame and RCC workshops and fabrication sheds sized for machinery, power load and material movement — built for manufacturing and small-industrial use.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="process" id="process">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// HOW WE WORK</span>
+      <h2>Five steps, one site file.</h2>
+      <p>The same sequence runs whether we're grading a plot or finishing a villa — nothing hands off between separate contractors.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><span class="num mono">01</span><h4>Site visit &amp; brief</h4><p>We walk the plot with you, note access, soil and your intended use before quoting anything.</p></div>
+      <div class="step"><span class="num mono">02</span><h4>Survey &amp; soil testing</h4><p>Boundary and topographic survey plus soil investigation set the baseline for design.</p></div>
+      <div class="step"><span class="num mono">03</span><h4>Design &amp; approvals</h4><p>Structural drawings, layout plans and the paperwork needed for local approvals.</p></div>
+      <div class="step"><span class="num mono">04</span><h4>Construction &amp; supervision</h4><p>A dedicated site engineer tracks progress, quality and safety through every stage.</p></div>
+      <div class="step"><span class="num mono">05</span><h4>Handover &amp; documentation</h4><p>As-built drawings, warranties and completion certificates handed over at close.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="estimate">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// ROUGH ESTIMATE</span>
+      <h2>See a ballpark, in seconds.</h2>
+      <p>Pick a service and enter your area for an indicative range. This isn't a quote — request a site visit for exact numbers.</p>
+    </div>
+    <div class="estimate-box">
+      <div class="estimate-form">
+        <div class="field">
+          <label for="estService">Service</label>
+          <select id="estService">
+            <option value="warehouse" data-low="1200" data-high="2500" data-unit="sqft" data-time-low="6" data-time-high="10" data-time-unit="months">Warehouse Construction</option>
+            <option value="fill" data-low="55" data-high="120" data-unit="sqft" data-time-low="2" data-time-high="6" data-time-unit="weeks">Land Filling &amp; Grading</option>
+            <option value="survey" data-low="5000" data-high="15000" data-base-low="5000" data-base-high="8000" data-unit="acre" data-time-low="3" data-time-high="7" data-time-unit="days">Land Survey</option>
+            <option value="villa" data-low="2200" data-high="3200" data-unit="sqft" data-time-low="10" data-time-high="14" data-time-unit="months">Villa Construction</option>
+            <option value="pool" data-low="2200" data-high="4200" data-unit="sqft" data-time-low="6" data-time-high="10" data-time-unit="weeks">Swimming Pool Construction</option>
+            <option value="society" data-low="1600" data-high="2400" data-unit="sqft" data-time-low="12" data-time-high="18" data-time-unit="months">Society &amp; Apartment Construction</option>
+            <option value="house" data-low="1300" data-high="2000" data-unit="sqft" data-time-low="6" data-time-high="10" data-time-unit="months">House Construction</option>
+            <option value="workshop" data-low="900" data-high="1800" data-unit="sqft" data-time-low="4" data-time-high="8" data-time-unit="months">Workshop Construction</option>
+          </select>
+        </div>
+        <div class="field">
+          <label id="areaLabel" for="estArea">Built-up area (sqft)</label>
+          <input type="number" id="estArea" min="1" value="3000" placeholder="e.g. 3000">
+        </div>
+      </div>
+      <div class="estimate-result">
+        <div class="amount" id="estAmount">₹42.5L – ₹88.5L</div>
+        <div class="unit" id="estUnit">at ₹1,200–₹2,500 / sqft, before GST</div>
+        <div class="timeline" style="margin-top:18px; padding-top:18px; border-top:1px dashed var(--line);">
+          <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:6px;"><span>Subtotal</span><strong id="estSubtotal">₹36L – ₹75L</strong></div>
+          <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:6px; color:var(--ink-soft);"><span>GST (18%)</span><strong id="estGst">₹6.5L – ₹13.5L</strong></div>
+          <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:700; margin-top:8px; padding-top:8px; border-top:1px solid var(--line);"><span>Total, incl. GST</span><strong id="estTotal">₹42.5L – ₹88.5L</strong></div>
+        </div>
+        <div class="timeline">Typical timeline: <strong id="estTime">6–10 months</strong></div>
+        <div class="estimate-note">Market-rate ranges for projects in the Bhiwandi, Padgha, Khadavli and Dhole belt, referenced against 2026 industry cost data, plus GST at the 18% works-contract rate under GST 2.0 (effective 22 Sep 2025). Actual cost depends on soil condition, specification and site access, and the applicable GST rate can vary by project type — confirm with your CA before signing a contract. Not a binding quote.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="projects">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// SELECTED WORK</span>
+      <h2>Recent parcels we've closed out.</h2>
+      <p>A sample from across our five service lines — full case studies shared on request.</p>
+    </div>
+    <div class="projects-grid">
+
+      <div class="proj-card">
+        <div class="proj-visual"><svg viewBox="0 0 100 80" fill="none" stroke="#1F4B4A" stroke-width="1.5"><path d="M8 70V30L50 12L92 30V70Z"/><path d="M8 30H92"/><path d="M28 70V45H72V70"/></svg></div>
+        <div class="proj-body"><span class="cat mono">WAREHOUSE</span><h4>Bhiwandi Logistics Shed</h4><p>62,000 sqft PEB warehouse with 3 dock levellers, delivered in 7 months.</p></div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-visual"><svg viewBox="0 0 100 80" fill="none" stroke="#1F4B4A" stroke-width="1.5"><path d="M6 64H94"/><path d="M12 64L26 40L36 50L54 24L66 64"/><path d="M26 40V64"/></svg></div>
+        <div class="proj-body"><span class="cat mono">LAND FILLING</span><h4>Padgha Plot Grading</h4><p>4.2 acre low-lying plot filled and compacted to bearing capacity in 5 weeks.</p></div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-visual"><svg viewBox="0 0 100 80" fill="none" stroke="#1F4B4A" stroke-width="1.5"><path d="M50 14V34"/><circle cx="50" cy="42" r="8"/><path d="M26 66L50 48L74 66"/><path d="M14 66H86"/></svg></div>
+        <div class="proj-body"><span class="cat mono">LAND SURVEY</span><h4>Khadavli Boundary Survey</h4><p>Total-station boundary and topo survey across an 8-acre mixed-use parcel.</p></div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-visual"><svg viewBox="0 0 100 80" fill="none" stroke="#1F4B4A" stroke-width="1.5"><path d="M14 40L50 16L86 40"/><path d="M22 40V66H78V40"/><path d="M42 66V48H58V66"/></svg></div>
+        <div class="proj-body"><span class="cat mono">VILLA</span><h4>Khadavli Riverside Villa</h4><p>4BHK, 3,800 sqft villa with landscaped terrace, completed in 11 months.</p></div>
+      
+      </div>
+      <div class="proj-card">
+        <div class="proj-visual"><svg viewBox="0 0 100 80" fill="none" stroke="#1F4B4A" stroke-width="1.5"><rect x="12" y="22" width="76" height="34" rx="2"/><path d="M18 64Q26 58 34 64T50 64T66 64T82 64"/></svg></div>
+        <div class="proj-body"><span class="cat mono">POOL</span><h4>Dalepada Farmhouse Pool</h4><p>18m Swimming pool with deck and filtration, built in 8 weeks.</p></div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-visual"><svg viewBox="0 0 100 80" fill="none" stroke="#1F4B4A" stroke-width="1.5"><path d="M8 68V30L38 14L68 30V68Z"/><path d="M8 30H68"/><path d="M76 68V40L92 32V68Z"/></svg></div>
+        <div class="proj-body"><span class="cat mono">WAREHOUSE + FILL</span><h4>Khadavli Combined Scope</h4><p>Site grading followed by a 40,000 sqft warehouse, run as one contract.</p></div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-visual"><svg viewBox="0 0 100 80" fill="none" stroke="#1F4B4A" stroke-width="1.5"><rect x="14" y="14" width="26" height="56"/><rect x="48" y="26" width="26" height="44"/><path d="M20 22H26M20 32H26M20 42H26M20 52H26M54 34H60M54 44H60M54 54H60"/></svg></div>
+        <div class="proj-body"><span class="cat mono">SOCIETY</span><h4>Bhiwandi Housing Society</h4><p>G+4 apartment block, 32 units, delivered with common amenities in 15 months.</p></div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-visual"><svg viewBox="0 0 100 80" fill="none" stroke="#1F4B4A" stroke-width="1.5"><path d="M18 40L50 18L82 40"/><path d="M26 40V66H74V40"/><rect x="42" y="48" width="16" height="18"/></svg></div>
+        <div class="proj-body"><span class="cat mono">HOUSE</span><h4>Padgha Independent House</h4><p>2BHK, 1,400 sqft family home, foundation to finish in 8 months.</p></div>
+      </div>
+
+      <div class="proj-card">
+        <div class="proj-visual"><svg viewBox="0 0 100 80" fill="none" stroke="#1F4B4A" stroke-width="1.5"><path d="M8 62V38L30 26L52 38V62"/><path d="M52 62V34L74 26V62"/><path d="M8 62H74"/><circle cx="24" cy="50" r="4"/></svg></div>
+        <div class="proj-body"><span class="cat mono">WORKSHOP</span><h4>kurund Rental shops</h4><p>500 sqft concrete frame shops shed with 3-phase partition, built in 2 months.</p></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="stats">
+  <div class="wrap">
+    <div class="stats-grid">
+      <div class="stat"><div class="num">14+</div><div class="lbl">years in land development &amp; construction</div></div>
+      <div class="stat"><div class="num">100+</div><div class="lbl">projects delivered across all eight services</div></div>
+      <div class="stat"><div class="num">35L+</div><div class="lbl">sqft developed to date</div></div>
+      <div class="stat"><div class="num">96%</div><div class="lbl">of new clients from referrals</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="leadership">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// LEADERSHIP</span>
+      <h2>Who's running the site.</h2>
+      <p>Every project is signed off by the same two people, from the first survey to final handover.</p>
+    </div>
+    <div class="leadership-grid">
+      <div class="lead-card">
+        <div class="lead-avatar">MR</div>
+        <div>
+          <span class="lead-role">OWNER</span>
+          <h3 class="lead-name">Musaddique Rais</h3>
+          <p class="lead-blurb">Oversees every project from site acquisition through final handover.</p>
+        </div>
+      </div>
+      <div class="lead-card">
+        <div class="lead-avatar">AR</div>
+        <div>
+          <span class="lead-role">MANAGER</span>
+          <h3 class="lead-name">Abdullah Rais</h3>
+          <p class="lead-blurb">Runs day-to-day site operations, scheduling and client coordination.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="testimonials">
+  <div class="wrap">
+    <div class="section-head" style="margin-bottom:40px;">
+      <span class="section-tag">// CLIENT NOTES</span>
+      <h2>What clients tell us after handover.</h2>
+    </div>
+    <div class="testi-wrap">
+      <div class="testi-card active">
+        <p class="testi-quote">"They surveyed, filled and built our warehouse without us needing three separate contractors on site."</p>
+        <p class="testi-meta">Operations Head — FMCG warehouse client, Bhiwandi</p>
+      </div>
+      <div class="testi-card">
+        <p class="testi-quote">"The soil report and grading plan matched exactly what they delivered on the ground. No surprises mid-project."</p>
+        <p class="testi-meta">Landowner — 4.2 acre plot, Padgha</p>
+      </div>
+      <div class="testi-card">
+        <p class="testi-quote">"Our villa was handed over with as-built drawings and warranties in order — made the loan closure simple."</p>
+        <p class="testi-meta">Homeowner — Khadavli riverside villa</p>
+      </div>
+      <div class="testi-nav">
+        <button id="testiPrev" aria-label="Previous testimonial">←</button>
+        <button id="testiNext" aria-label="Next testimonial">→</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section contact" id="contact">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="section-tag">// GET IN TOUCH</span>
+      <h2>Request a site visit.</h2>
+      <p>Tell us about the plot and what you're planning — we'll get back with a visit date within one working day.</p>
+    </div>
+    <div class="contact-grid">
+      <form class="contact-form" id="contactForm">
+        <div class="field">
+          <label for="cName">Name</label>
+          <input type="text" id="cName" required placeholder="Your full name">
+        </div>
+        <div class="field">
+          <label for="cPhone">Phone</label>
+          <input type="text" id="cPhone" required placeholder="10-digit mobile number">
+        </div>
+        <div class="field">
+          <label for="cService">Interested in</label>
+          <select id="cService">
+            <option>Warehouse Construction</option>
+            <option>Land Filling &amp; Grading</option>
+            <option>Land Survey</option>
+            <option>Villa Construction</option>
+            <option>Swimming Pool Construction</option>
+            <option>Society &amp; Apartment Construction</option>
+            <option>House Construction</option>
+            <option>Workshop Construction</option>
+            <option>Not sure yet</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="cMsg">Plot details</label>
+          <textarea id="cMsg" rows="4" placeholder="Location, approximate area, and anything else useful"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;">Request a site visit</button>
+        <div class="form-success" id="formSuccess">Thanks — your request is noted. Our site team will call within one working day.</div>
+      </form>
+      <div>
+        <div class="contact-info-item"><span class="k mono">OFFICE</span><span class="v">Site Office, Padgha–Bhiwandi Road, Bhiwandi, Thane, Maharashtra</span></div>
+        <div class="contact-info-item"><span class="k mono">PHONE</span><span class="v">+91 92700 68628</span></div>
+        <div class="contact-info-item"><span class="k mono">EMAIL</span><span class="v">thearmsdevelopers@gmail.com</span></div>
+        <div class="contact-info-item"><span class="k mono">SITE HOURS</span><span class="v">Mon – Sat, 9:00 AM – 6:30 PM</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap footer-row">
+    <span>© 2026 The Arms Developers. All rights reserved.</span>
+    <span>Warehouse · Land Filling · Land Survey · Villa · Pool · Society · House · Workshop</span>
+  </div>
+</footer>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // Supabase configuration
+  // IMPORTANT: replace these two placeholders with your Supabase Project URL and PUBLISHABLE key.
+  // Never put a Supabase secret/service-role key in this HTML file.
+  const SUPABASE_URL = "https://wqalhnjwootkmzuqzvty.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_RVFUevVIvK200hyopxGmew_EFGEG8W9";
+  const supabaseClient = (SUPABASE_URL.startsWith("http") && !SUPABASE_URL.includes("YOUR_"))
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY)
+    : null;
+
+  // sticky header
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // mobile menu
+  const menuBtn = document.getElementById('menuBtn');
+  const navLinks = document.getElementById('navLinks');
+  menuBtn.addEventListener('click', () => navLinks.classList.toggle('open'));
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+
+  // interactive plot map
+  const tooltip = document.getElementById('mapTooltip');
+  const mapWrap = document.querySelector('.plotmap-wrap');
+  document.querySelectorAll('.plot-zone').forEach(zone => {
+    zone.addEventListener('mousemove', (e) => {
+      const rect = mapWrap.getBoundingClientRect();
+      tooltip.textContent = zone.dataset.name;
+      tooltip.style.left = (e.clientX - rect.left) + 'px';
+      tooltip.style.top = (e.clientY - rect.top) + 'px';
+      tooltip.classList.add('show');
+    });
+    zone.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
+    zone.addEventListener('click', () => {
+      const target = document.getElementById(zone.dataset.target);
+      if(target){
+        target.scrollIntoView({behavior:'smooth', block:'center'});
+        target.classList.add('highlight');
+        setTimeout(() => target.classList.remove('highlight'), 1600);
+      }
+    });
+  });
+
+  // estimator
+  const estService = document.getElementById('estService');
+  const estArea = document.getElementById('estArea');
+  const estAmount = document.getElementById('estAmount');
+  const estUnit = document.getElementById('estUnit');
+  const estTime = document.getElementById('estTime');
+  const areaLabel = document.getElementById('areaLabel');
+  const estSubtotal = document.getElementById('estSubtotal');
+  const estGst = document.getElementById('estGst');
+  const estTotal = document.getElementById('estTotal');
+  const GST_RATE = 0.18;
+
+  function fmtINR(n){
+    if(n >= 100000){ return '₹' + (n/100000).toFixed(1).replace(/\.0$/,'') + 'L'; }
+    return '₹' + Math.round(n).toLocaleString('en-IN');
+  }
+
+  function updateEstimate(){
+    const opt = estService.options[estService.selectedIndex];
+    const low = parseFloat(opt.dataset.low);
+    const high = parseFloat(opt.dataset.high);
+    const unit = opt.dataset.unit;
+    const tLow = opt.dataset.timeLow, tHigh = opt.dataset.timeHigh, tUnit = opt.dataset.timeUnit;
+    const area = parseFloat(estArea.value) || 0;
+
+    areaLabel.textContent = unit === 'acre' ? 'Plot area (acres)' : 'Built-up / surface area (sqft)';
+    estArea.placeholder = unit === 'acre' ? 'e.g. 4' : 'e.g. 3000';
+
+    let subLow, subHigh, unitText;
+    if(unit === 'acre'){
+      const baseLow = parseFloat(opt.dataset.baseLow);
+      const baseHigh = parseFloat(opt.dataset.baseHigh);
+      // minimum call-out fee, or per-acre rate for larger plots — whichever is higher
+      subLow = Math.max(baseLow, area * low);
+      subHigh = Math.max(baseHigh, area * high);
+      unitText = 'at ' + fmtINR(low) + '–' + fmtINR(high) + ' / acre (₹' + fmtINR(baseLow) + '–' + fmtINR(baseHigh) + ' minimum), before GST';
+    } else {
+      subLow = low * area;
+      subHigh = high * area;
+      unitText = 'at ' + fmtINR(low) + '–' + fmtINR(high) + ' / sqft, before GST';
+    }
+
+    const gstLow = subLow * GST_RATE;
+    const gstHigh = subHigh * GST_RATE;
+    const totLow = subLow + gstLow;
+    const totHigh = subHigh + gstHigh;
+
+    estAmount.textContent = fmtINR(totLow) + ' – ' + fmtINR(totHigh);
+    estUnit.textContent = unitText;
+    estSubtotal.textContent = fmtINR(subLow) + ' – ' + fmtINR(subHigh);
+    estGst.textContent = fmtINR(gstLow) + ' – ' + fmtINR(gstHigh);
+    estTotal.textContent = fmtINR(totLow) + ' – ' + fmtINR(totHigh);
+    estTime.textContent = tLow + '–' + tHigh + ' ' + tUnit;
+  }
+  estService.addEventListener('change', updateEstimate);
+  estArea.addEventListener('input', updateEstimate);
+  updateEstimate();
+
+  // testimonials carousel
+  const testiCards = document.querySelectorAll('.testi-card');
+  let testiIndex = 0;
+  function showTesti(i){
+    testiCards.forEach(c => c.classList.remove('active'));
+    testiIndex = (i + testiCards.length) % testiCards.length;
+    testiCards[testiIndex].classList.add('active');
+  }
+  document.getElementById('testiPrev').addEventListener('click', () => showTesti(testiIndex - 1));
+  document.getElementById('testiNext').addEventListener('click', () => showTesti(testiIndex + 1));
+
+  // contact form -> Supabase database
+  const contactForm = document.getElementById('contactForm');
+  const formSuccess = document.getElementById('formSuccess');
+
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!supabaseClient) {
+      formSuccess.textContent = 'Database is not connected yet. Add your Supabase URL and publishable key in the code.';
+      formSuccess.classList.add('show');
+      return;
+    }
+
+    const submitBtn = contactForm.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+    formSuccess.classList.remove('show');
+
+    const payload = {
+      name: document.getElementById('cName').value.trim(),
+      phone: document.getElementById('cPhone').value.trim(),
+      service: document.getElementById('cService').value,
+      plot_details: document.getElementById('cMsg').value.trim(),
+      source: 'website'
+    };
+
+    const { error } = await supabaseClient
+      .from('site_visit_requests')
+      .insert(payload);
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+
+    if (error) {
+      console.error('Supabase insert error:', error);
+      formSuccess.textContent = 'Sorry, we could not submit your request. Please call us directly.';
+      formSuccess.classList.add('show');
+      return;
+    }
+
+    formSuccess.textContent = 'Thanks — your request has been submitted. Our site team will call within one working day.';
+    formSuccess.classList.add('show');
+    contactForm.reset();
+  });
+</script>
+
+</body>
+</html>
